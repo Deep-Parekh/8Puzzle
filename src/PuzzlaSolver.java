@@ -1,3 +1,9 @@
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -10,20 +16,55 @@ import java.util.Scanner;
  */
 public class PuzzlaSolver {
 	
-	public static byte[] createByteArray(String userInput) {
+	public static byte[] parseByteArray(String userInput) {
 		byte[] userState = new byte[9];
-		userInput = userInput.trim();
-		int j = 0;
+		userInput = userInput.replaceAll(" ", "");
+		if(userInput.length() != 9)
+			return null;
 		for(int i  = 0; i < userInput.length(); ++i) {
-			char c = userInput.charAt(i);
-			if (c != ' ') {
-				byte b = Byte.parseByte(userInput.charAt(i) + "");
-				userState[j++] = (byte) c;
-				if (j >= 9)
-					break;
-			}
+			byte b = Byte.parseByte(userInput.charAt(i) + "");
+			userState[i] = b;
 		}
 		return userState;
+	}
+	
+	public static int getHammingDistance(byte[] curState) {
+		int misplaced = 0;
+		for(int i = 0; i < 9; ++i) {
+			if(curState[i] == 0)
+				continue;
+			if(curState[i] != i)
+				misplaced++;
+		}
+		return misplaced;
+	}
+	
+	public static int getManhattanDistance(byte[] curState) {
+		return 0;
+	}
+	
+	public static List<byte[]> getStates(String fileName) {
+		BufferedReader br = null;
+		List<byte[]> initStates = new LinkedList<byte[]>();
+		try {
+			br = new BufferedReader(new FileReader(fileName));
+			String line = br.readLine();
+			while(line != null) {
+				initStates.add(parseByteArray(line));
+			}
+		} catch (FileNotFoundException e) {
+			
+		} catch (IOException e) {
+			
+		}
+		return initStates;
+	}
+	
+	public static void solveStates(List<byte[]> states) {
+		for(byte[] state: states) {
+			EightPuzzle puzzle = new EightPuzzle(state);
+			puzzle.solve();
+		}
 	}
 
 	/**
@@ -32,6 +73,11 @@ public class PuzzlaSolver {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		Scanner kb = new Scanner(System.in);
+		if(args[0].endsWith(".txt")) {
+			List<byte[]> states = getStates(args[0]);
+			solveStates(states);
+			System.exit(0);
+		}
 		System.out.print("Would you like to enter your own puzzle state? (Y/N)");
 		String input = kb.nextLine();
 		byte[] initState;
@@ -42,17 +88,14 @@ public class PuzzlaSolver {
 			while(true) {
 				System.out.print("Enter a valid state: ");
 				inputState = kb.nextLine();
-				initState = createByteArray(inputState);
+				initState = parseByteArray(inputState);
 				if(EightPuzzle.isValidState(initState))
 					break;
 			}
 		}
 		
 		EightPuzzle puzzle = new EightPuzzle(initState);
-		puzzle.solveGraphHamming();
-		puzzle.solveGraphManhattan();
-		puzzle.solveTreeHamming();
-		puzzle.solveTreeManhattan();
+		puzzle.solve();
 	}
 
 }

@@ -1,4 +1,7 @@
 import java.util.Arrays;
+import java.util.List;
+import java.util.PriorityQueue;
+import java.util.LinkedList;
 import java.util.Random;
 /**
  * 
@@ -13,6 +16,9 @@ public class EightPuzzle {
 	private static final byte[] GOAL = new byte[] {0,1,2,3,4,5,6,7,8};
 	private static final byte STATE_LENGTH = 9;
 	private byte[] puzzle;
+	private int pathCost;
+	private int totalCost;
+	private List<EightPuzzle> path;
 	
 	public EightPuzzle() {
 		
@@ -20,10 +26,45 @@ public class EightPuzzle {
 	
 	public EightPuzzle(byte[] initState) {
 		this.puzzle = initState;
+		this.pathCost = 0;
+		this.totalCost = 0;
+		this.path = new LinkedList<EightPuzzle>();
+		path.add(this);
 	}
 	
-	public static boolean isGoal(byte[] curState) {
-		return Arrays.equals(curState, GOAL);
+	public EightPuzzle(byte[] initState, int pathCost, int totalCost, List<EightPuzzle> path) {
+		this.puzzle = initState;
+		this.pathCost = pathCost;
+		this.totalCost = totalCost;
+		this.path = path;
+	}
+	
+	public byte[] getPuzzle() {
+		return this.puzzle;
+	}
+	
+	public void setPathCost(int pathCost) {
+		this.pathCost = pathCost;
+	}
+	
+	public int getPathCost() {
+		return this.pathCost;
+	}
+	
+	public void setTotalCost(int totalCost) {
+		this.totalCost = totalCost;
+	}
+	
+	public int getTotalCost() {
+		return this.totalCost;
+	}
+	
+	public List<EightPuzzle> getPath(){
+		return this.getPath();
+	}
+	
+	public static boolean isGoal(EightPuzzle curState) {
+		return Arrays.equals(curState.getPuzzle(), GOAL);
 	}
 	
 	public static boolean isValidState(byte[] curState) {
@@ -84,6 +125,10 @@ public class EightPuzzle {
 		return randomState;
 	}
 	
+	public List<EightPuzzle> getNextStates(){
+		return null;
+	}
+	
 	public void solveGraphHamming() {
 		// TODO Auto-generated method stub
 		
@@ -96,11 +141,28 @@ public class EightPuzzle {
 
 	public void solveTreeHamming() {
 		// TODO Auto-generated method stub
-		
+		PriorityQueue<EightPuzzle> frontier = new PriorityQueue<EightPuzzle>(new PuzzleComparator());
+		frontier.add(this);
+		while(!frontier.isEmpty()) {
+			EightPuzzle bestState = frontier.remove();
+			if(isGoal(bestState)) {
+				break;
+			}
+			List<EightPuzzle> nextStates = bestState.getNextStates();
+			
+		}
 	}
 
 	public void solveTreeManhattan() {
 		// TODO Auto-generated method stub
 		
 	}
+
+	public void solve() {
+		solveGraphHamming();
+		solveGraphManhattan();
+		solveTreeHamming();
+		solveTreeManhattan();
+	}
+	
 }
