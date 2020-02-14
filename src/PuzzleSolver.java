@@ -14,7 +14,7 @@ import java.util.Scanner;
  * @author dparekh
  *
  */
-public class PuzzlaSolver {
+public class PuzzleSolver {
 	
 	public static byte[] parseByteArray(String userInput) {
 		byte[] userState = new byte[9];
@@ -48,7 +48,7 @@ public class PuzzlaSolver {
 	
 	public static void solveStates(List<byte[]> states) {
 		for(byte[] state: states) {
-			EightPuzzle puzzle = new EightPuzzle(state);
+			PuzzleState puzzle = new PuzzleState(state);
 			puzzle.solve();
 		}
 	}
@@ -67,19 +67,19 @@ public class PuzzlaSolver {
 		String input = kb.nextLine();
 		byte[] initState;
 		if(input.trim().toUpperCase().charAt(0) == 'N')
-			initState = EightPuzzle.getRandomValidState();
+			initState = PuzzleState.getRandomValidState();
 		else {
 			String inputState = "";
 			while(true) {
 				System.out.print("Enter a valid state: ");
 				inputState = kb.nextLine();
 				initState = parseByteArray(inputState);
-				if(EightPuzzle.isValidState(initState))
+				if(PuzzleState.isValidState(initState))
 					break;
 			}
 		}
 		
-		EightPuzzle puzzle = new EightPuzzle(initState);
+		PuzzleState puzzle = new PuzzleState(initState);
 		puzzle.solve();
 	}
 
