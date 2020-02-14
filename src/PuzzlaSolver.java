@@ -28,20 +28,6 @@ public class PuzzlaSolver {
 		return userState;
 	}
 	
-	public static int getHammingDistance(byte[] curState) {
-		int misplaced = 0;
-		for(int i = 0; i < 9; ++i) {
-			if(curState[i] == 0)
-				continue;
-			if(curState[i] != i)
-				misplaced++;
-		}
-		return misplaced;
-	}
-	
-	public static int getManhattanDistance(byte[] curState) {
-		return 0;
-	}
 	
 	public static List<byte[]> getStates(String fileName) {
 		BufferedReader br = null;
@@ -73,11 +59,10 @@ public class PuzzlaSolver {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		Scanner kb = new Scanner(System.in);
-		if(args[0].endsWith(".txt")) {
-			List<byte[]> states = getStates(args[0]);
-			solveStates(states);
-			System.exit(0);
-		}
+		/*
+		 * if(args[0].endsWith(".txt")) { List<byte[]> states = getStates(args[0]);
+		 * solveStates(states); System.exit(0); }
+		 */
 		System.out.print("Would you like to enter your own puzzle state? (Y/N)");
 		String input = kb.nextLine();
 		byte[] initState;
