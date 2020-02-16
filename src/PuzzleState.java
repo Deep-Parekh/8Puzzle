@@ -163,98 +163,25 @@ public class PuzzleState {
 		// All state related calculations should be done in here
 		List<PuzzleState> nextStates = new LinkedList<PuzzleState>();
 		int index = findSpace();
-		
-		switch(index) {
-		case 0:
-			{PuzzleState child1 = new PuzzleState(this);
-			child1.swap(0,1);
-			PuzzleState child2 = new PuzzleState(this);
-			child2.swap(0,3);
-			nextStates.add(child1);
-			nextStates.add(child2);
-			break;}
-		case 1:
-			{PuzzleState child1 = new PuzzleState(this);
-			child1.swap(1,0);
-			PuzzleState child2 = new PuzzleState(this);
-			child2.swap(1,2);
-			PuzzleState child3 = new PuzzleState(this);
-			child3.swap(1,4);
-			nextStates.add(child1);
-			nextStates.add(child2);
-			nextStates.add(child3);
-			break;}
-		case 2:
-			{PuzzleState child1 = new PuzzleState(this);
-			child1.swap(2,1);
-			PuzzleState child2 = new PuzzleState(this);
-			child2.swap(2,5);
-			nextStates.add(child1);
-			nextStates.add(child2);
-			break;}
-		case 3:
-			{PuzzleState child1 = new PuzzleState(this);
-			child1.swap(3,0);
-			PuzzleState child2 = new PuzzleState(this);
-			child2.swap(3,4);
-			PuzzleState child3 = new PuzzleState(this);
-			child3.swap(3,6);
-			nextStates.add(child1);
-			nextStates.add(child2);
-			nextStates.add(child3);
-			break;}
-		case 4:
-			{PuzzleState child1 = new PuzzleState(this);
-			child1.swap(4,1);
-			PuzzleState child2 = new PuzzleState(this);
-			child2.swap(4,3);
-			PuzzleState child3 = new PuzzleState(this);
-			child3.swap(4,5);
-			PuzzleState child4 = new PuzzleState(this);
-			child4.swap(4,7);
-			nextStates.add(child1);
-			nextStates.add(child2);
-			nextStates.add(child3);
-			nextStates.add(child4);
-			break;}
-		case 5:
-			{PuzzleState child1 = new PuzzleState(this);
-			child1.swap(5,2);
-			PuzzleState child2 = new PuzzleState(this);
-			child2.swap(5,4);
-			PuzzleState child3 = new PuzzleState(this);
-			child3.swap(5,8);
-			nextStates.add(child1);
-			nextStates.add(child2);
-			nextStates.add(child3);
-			break;}
-		case 6:
-			{PuzzleState child1 = new PuzzleState(this);
-			child1.swap(6,3);
-			PuzzleState child2 = new PuzzleState(this);
-			child2.swap(6,7);
-			nextStates.add(child1);
-			nextStates.add(child2);
-			break;}
-		case 7:
-			{PuzzleState child1 = new PuzzleState(this);
-			child1.swap(7,4);
-			PuzzleState child2 = new PuzzleState(this);
-			child2.swap(7,6);
-			PuzzleState child3 = new PuzzleState(this);
-			child3.swap(7,8);
-			nextStates.add(child1);
-			nextStates.add(child2);
-			nextStates.add(child3);
-			break;}
-		case 8:
-			{PuzzleState child1 = new PuzzleState(this);
-			child1.swap(8,5);
-			PuzzleState child2 = new PuzzleState(this);
-			child2.swap(8,7);
-			nextStates.add(child1);
-			nextStates.add(child2);
-			break;}
+		if(index+1%3 != 0 && index+1 < STATE_LENGTH){
+			PuzzleState child = new PuzzleState(this);
+			child.swap(index, index+1);
+			nextStates.add(child);
+		}
+		if(index-1%3 != 2 && index-1 >= 0) {
+			PuzzleState child = new PuzzleState(this);
+			child.swap(index, index-1);
+			nextStates.add(child);
+		}
+		if(index+3 < STATE_LENGTH) {
+			PuzzleState child = new PuzzleState(this);
+			child.swap(index, index+3);
+			nextStates.add(child);
+		}
+		if(index-3 >= 0) {
+			PuzzleState child = new PuzzleState(this);
+			child.swap(index, index-3);
+			nextStates.add(child);
 		}
 		return nextStates; 
 	}
@@ -311,7 +238,7 @@ public class PuzzleState {
 		PuzzleState bestState = null;
 		while(!frontier.isEmpty()) {
 			bestState = frontier.remove();
-			System.out.println(bestState);
+			//System.out.println(bestState);
 			++nodesSearched;
 			if(bestState.isGoal()) {
 				break;
@@ -328,6 +255,9 @@ public class PuzzleState {
 		System.out.println("Reached the goal state: ");
 		System.out.print(bestState + "\t");
 		System.out.println("Total nodes searched: " + nodesSearched);
+		System.out.println("The path was :");
+		for(PuzzleState ps : bestState.getPath())
+			System.out.println(ps);
 	}
 
 	public void solveGraphManhattan() {
@@ -342,7 +272,7 @@ public class PuzzleState {
 		PuzzleState bestState = null;
 		while(!frontier.isEmpty()) {
 			bestState = frontier.remove();
-			System.out.println(bestState);
+			//System.out.println(bestState);
 			++nodesSearched;
 			if(bestState.isGoal()) {
 				break;
@@ -359,6 +289,9 @@ public class PuzzleState {
 		System.out.println("Reached the goal state: ");
 		System.out.print(bestState + "\t");
 		System.out.println("Total nodes searched: " + nodesSearched);
+		System.out.println("The path was :");
+		for(PuzzleState ps : bestState.getPath())
+			System.out.println(ps);
 	}
 
 	public void solveTreeHamming() {
@@ -370,7 +303,7 @@ public class PuzzleState {
 		PuzzleState bestState = null;
 		while(!frontier.isEmpty()) {
 			bestState = frontier.remove();
-			System.out.println(bestState);
+			//System.out.println(bestState);
 			++nodesSearched;
 			if(bestState.isGoal()) {
 				break;
@@ -383,6 +316,9 @@ public class PuzzleState {
 		System.out.println("Reached the goal state: ");
 		System.out.print(bestState + "\t");
 		System.out.println("Total nodes searched: " + nodesSearched);
+		System.out.println("The path was :");
+		for(PuzzleState ps : bestState.getPath())
+			System.out.println(ps);
 	}
 
 	public void solveTreeManhattan() {
@@ -394,7 +330,7 @@ public class PuzzleState {
 		PuzzleState bestState = null;
 		while(!frontier.isEmpty()) {
 			bestState = frontier.remove();
-			System.out.println(bestState);
+			//System.out.println(bestState);
 			++nodesSearched;
 			if(bestState.isGoal()) {
 				break;
@@ -407,6 +343,9 @@ public class PuzzleState {
 		System.out.println("Reached the goal state: ");
 		System.out.print(bestState + "\t");
 		System.out.println("Total nodes searched: " + nodesSearched);
+		System.out.println("The path was :");
+		for(PuzzleState ps : bestState.getPath())
+			System.out.println(ps);
 	}
 
 	public void solve() {

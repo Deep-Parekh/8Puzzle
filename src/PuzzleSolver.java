@@ -29,8 +29,7 @@ public class PuzzleSolver {
 		Arrays.toString(userState);
 		return userState;
 	}
-	
-	
+
 	public static List<byte[]> getStates(String fileName) {
 		BufferedReader br = null;
 		List<byte[]> initStates = new LinkedList<byte[]>();
