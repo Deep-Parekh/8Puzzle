@@ -16,7 +16,7 @@ import java.util.Set;
 public class PuzzleState {
 	
 	private static final byte[] GOAL = new byte[] {0,1,2,3,4,5,6,7,8};
-	private static final byte STATE_LENGTH = 9;
+	static final byte STATE_LENGTH = 9;
 	private byte[] puzzle;
 	private int pathCost;		
 	private int totalCost;
@@ -198,41 +198,12 @@ public class PuzzleState {
 		this.puzzle[i] = this.puzzle[j];
 		this.puzzle[j] = temp;
 	}
-
-	public int getHammingDistance() {
-		int misplaced = 0;
-		for(int i = 0; i < 9; ++i) {
-			if(this.puzzle[i] == 0)
-				continue;
-			if(this.puzzle[i] != i)
-				misplaced++;
-		}
-		return misplaced;
-	}
 	
-	// TODO
-	public int getManhattanDistance() {
-		int distance = 0;
-		for(int i  = 0; i < STATE_LENGTH; ++i) {
-			if(this.puzzle[i] == 0)
-				continue;
-			if(this.puzzle[i] != i) {
-				distance += getDistance(i/3, i %3, this.puzzle[i]/3, this.puzzle[i]%3);
-			}
-		}
-		return distance;
-	}
-	
-	private int getDistance(int x1, int y1, int x2, int y2) {
-		return Math.abs(x2-x1) + Math.abs(y2-y1);
-	}
-	
-	public void solveGraphHamming() {
-		System.out.println("Solving puzzle using Graph Search and Hamming Distance as heuristic...");
-		System.out.println("Initial State: ");
+	public void solveGraph(HeuristicInterface heuristic) {
+		long start = System.nanoTime();
 		PriorityQueue<PuzzleState> frontier = new PriorityQueue<PuzzleState>(new PuzzleComparator());
 		Set<PuzzleState> explored = new HashSet<PuzzleState>();
-		this.setTotalCost(this.getHammingDistance());
+		this.setTotalCost(heuristic.getHeuristic(this.getPuzzle()));
 		frontier.add(this);
 		int nodesSearched = 0;
 		PuzzleState bestState = null;
@@ -246,58 +217,26 @@ public class PuzzleState {
 			explored.add(bestState);
 			List<PuzzleState> nextStates = bestState.getNextStates();
 			for(PuzzleState state : nextStates)
-				state.setTotalCost(state.getPathCost() + state.getHammingDistance());
+				state.setTotalCost(state.getPathCost() + heuristic.getHeuristic(state.getPuzzle()));
 			nextStates.forEach(state -> {
 				if(!explored.contains(state))
 					frontier.add(state);
 				});
 		}
+		long end = System.nanoTime();
 		System.out.println("Reached the goal state: ");
 		System.out.print(bestState + "\t");
 		System.out.println("Total nodes searched: " + nodesSearched);
 		System.out.println("The path was :");
 		for(PuzzleState ps : bestState.getPath())
 			System.out.println(ps);
+		System.out.println("It took " + (end-start)/1000000 + " milliseconds");
 	}
-
-	public void solveGraphManhattan() {
-		// TODO Auto-generated method stub
-		System.out.println("Solving puzzle using Graph Search and Manhattan Distance as heuristic...");
-		System.out.println("Initial State: ");
+	
+	public void solveTree(HeuristicInterface heuristic) {
+		long start = System.nanoTime();
 		PriorityQueue<PuzzleState> frontier = new PriorityQueue<PuzzleState>(new PuzzleComparator());
-		Set<PuzzleState> explored = new HashSet<PuzzleState>();
-		this.setTotalCost(this.getHammingDistance());
-		frontier.add(this);
-		int nodesSearched = 0;
-		PuzzleState bestState = null;
-		while(!frontier.isEmpty()) {
-			bestState = frontier.remove();
-			//System.out.println(bestState);
-			++nodesSearched;
-			if(bestState.isGoal()) {
-				break;
-			}
-			explored.add(bestState);
-			List<PuzzleState> nextStates = bestState.getNextStates();
-			for(PuzzleState state : nextStates)
-				state.setTotalCost(state.getPathCost() + state.getManhattanDistance());
-			nextStates.forEach(state -> {
-				if(!explored.contains(state))
-					frontier.add(state);
-				});
-		}
-		System.out.println("Reached the goal state: ");
-		System.out.print(bestState + "\t");
-		System.out.println("Total nodes searched: " + nodesSearched);
-		System.out.println("The path was :");
-		for(PuzzleState ps : bestState.getPath())
-			System.out.println(ps);
-	}
-
-	public void solveTreeHamming() {
-		System.out.println("Solving puzzle using Tree Search and Hamming Distance as heuristic...");
-		System.out.println("Initial State: ");
-		PriorityQueue<PuzzleState> frontier = new PriorityQueue<PuzzleState>(new PuzzleComparator());
+		this.setTotalCost(heuristic.getHeuristic(this.getPuzzle()));
 		frontier.add(this);
 		int nodesSearched = 0;
 		PuzzleState bestState = null;
@@ -310,49 +249,30 @@ public class PuzzleState {
 			}
 			List<PuzzleState> nextStates = bestState.getNextStates();
 			for(PuzzleState state : nextStates)
-				state.setTotalCost(state.getPathCost() + state.getHammingDistance());
+				state.setTotalCost(state.getPathCost() + heuristic.getHeuristic(state.getPuzzle()));
 			frontier.addAll(nextStates);
 		}
+		long end = System.nanoTime();
 		System.out.println("Reached the goal state: ");
 		System.out.print(bestState + "\t");
 		System.out.println("Total nodes searched: " + nodesSearched);
 		System.out.println("The path was :");
 		for(PuzzleState ps : bestState.getPath())
 			System.out.println(ps);
-	}
-
-	public void solveTreeManhattan() {
-		System.out.println("Solving puzzle using Tree Search and Manhattan Distance as heuristic...");
-		System.out.println("Initial State: ");
-		PriorityQueue<PuzzleState> frontier = new PriorityQueue<PuzzleState>(new PuzzleComparator());
-		frontier.add(this);
-		int nodesSearched = 0;
-		PuzzleState bestState = null;
-		while(!frontier.isEmpty()) {
-			bestState = frontier.remove();
-			//System.out.println(bestState);
-			++nodesSearched;
-			if(bestState.isGoal()) {
-				break;
-			}
-			List<PuzzleState> nextStates = bestState.getNextStates();
-			for(PuzzleState state : nextStates)
-				state.setTotalCost(state.getPathCost() + state.getManhattanDistance());
-			frontier.addAll(nextStates);
-		}
-		System.out.println("Reached the goal state: ");
-		System.out.print(bestState + "\t");
-		System.out.println("Total nodes searched: " + nodesSearched);
-		System.out.println("The path was :");
-		for(PuzzleState ps : bestState.getPath())
-			System.out.println(ps);
+		System.out.println("It took " + (end-start)/1000000 + " milliseconds");
 	}
 
 	public void solve() {
-		solveGraphHamming();
-		solveGraphManhattan();
-		solveTreeHamming();
-		solveTreeManhattan();
+		System.out.println("Graph Search:");
+		System.out.println("Solving the puzzle using hamming distance as heuristic...");
+		solveGraph(new Hamming());
+		System.out.println("Solving the puzzle using manhattan distance as heuristic...");
+		solveGraph(new Manhattan());
+		System.out.println("Tree Search:");
+		System.out.println("Solving the puzzle using hamming distance as heuristic...");
+		solveTree(new Hamming());
+		System.out.println("Solving the puzzle using manhattan distance as heuristic...");
+		solveTree(new Manhattan());
 	}
 	
 }

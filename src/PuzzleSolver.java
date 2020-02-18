@@ -1,4 +1,5 @@
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -31,20 +32,21 @@ public class PuzzleSolver {
 	}
 
 	public static List<byte[]> getStates(String fileName) {
-		BufferedReader br = null;
 		List<byte[]> initStates = new LinkedList<byte[]>();
 		try {
-			br = new BufferedReader(new FileReader(fileName));
+			BufferedReader br = new BufferedReader(new FileReader(fileName));
 			String line = br.readLine();
 			while(line != null) {
+				//System.out.println(line);
 				if(line.trim().charAt(0) == 'D')
 					continue;
 				initStates.add(parseByteArray(line));
+				line = br.readLine();
 			}
 		} catch (FileNotFoundException e) {
-			
+			e.printStackTrace();
 		} catch (IOException e) {
-			
+			e.printStackTrace();
 		}
 		return initStates;
 	}
@@ -64,6 +66,7 @@ public class PuzzleSolver {
 		Scanner kb = new Scanner(System.in);
 		
 		 if(args.length != 0) { 
+			 System.out.println("Reading from File" + args[0]);
 			 List<byte[]> states = getStates(args[0]);
 			 solveStates(states); 
 			 System.exit(0); 
@@ -85,11 +88,12 @@ public class PuzzleSolver {
 			}
 		}
 		PuzzleState puzzle = new PuzzleState(initState);
-		System.out.println("The initial State is: " + puzzle);
-		System.out.print("Do you want to solve the puzzle? (Y/N) ");
-		input = kb.nextLine();
-		if(input.trim().toUpperCase().charAt(0) == 'Y')
-			puzzle.solve();
+		//System.out.println("The initial State is: " + puzzle);
+		//System.out.print("Do you want to solve the puzzle? (Y/N) ");
+		//input = kb.nextLine();
+		//if(input.trim().toUpperCase().charAt(0) == 'Y')
+		//	puzzle.solve();
+		puzzle.solve();
 	}
 
 }
