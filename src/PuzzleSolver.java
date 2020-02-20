@@ -17,19 +17,6 @@ import java.util.Scanner;
  *
  */
 public class PuzzleSolver {
-	
-	public static byte[] parseByteArray(String userInput) {
-		byte[] userState = new byte[9];
-		userInput = userInput.replaceAll(" ", "");
-		if(userInput.length() != 9)
-			return null;
-		for(int i  = 0; i < userInput.length(); ++i) {
-			byte b = Byte.parseByte(userInput.charAt(i) + "");
-			userState[i] = b;
-		}
-		Arrays.toString(userState);
-		return userState;
-	}
 
 	public static List<byte[]> getStates(String fileName) {
 		List<byte[]> initStates = new LinkedList<byte[]>();
@@ -49,6 +36,19 @@ public class PuzzleSolver {
 			e.printStackTrace();
 		}
 		return initStates;
+	}
+	
+	private static byte[] parseByteArray(String userInput) {
+		byte[] userState = new byte[9];
+		userInput = userInput.replaceAll(" ", "");
+		if(userInput.length() != 9)
+			return null;
+		for(int i  = 0; i < userInput.length(); ++i) {
+			byte b = Byte.parseByte(userInput.charAt(i) + "");
+			userState[i] = b;
+		}
+		Arrays.toString(userState);
+		return userState;
 	}
 	
 	public static void solveStates(List<byte[]> states) {
@@ -81,10 +81,14 @@ public class PuzzleSolver {
 			String inputState = "";
 			while(true) {
 				System.out.print("Enter a valid state: ");
-				inputState = kb.nextLine();
-				initState = parseByteArray(inputState);
-				if(PuzzleState.isValidState(initState))
-					break;
+				try {
+					inputState = kb.nextLine();
+					initState = parseByteArray(inputState);
+					if(PuzzleState.isValidState(initState))
+						break;
+				} catch (Exception e) {
+					System.out.println("The state you entered is not valid, try again ");
+				}
 			}
 		}
 		PuzzleState puzzle = new PuzzleState(initState);

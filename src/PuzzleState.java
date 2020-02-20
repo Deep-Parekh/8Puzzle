@@ -1,3 +1,4 @@
+import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -20,33 +21,34 @@ public class PuzzleState {
 	private byte[] puzzle;
 	private int pathCost;		
 	private int totalCost;
-	private List<PuzzleState> path;
+	private PuzzleState parent;
 	
 	public PuzzleState() {
-		
+		this.puzzle = null;
+		this.pathCost = 0;
+		this.totalCost = 0;
+		this.parent = null;
 	};
 	
 	public PuzzleState(byte[] initState) {
 		this.puzzle = initState;
 		this.pathCost = 0;
 		this.totalCost = 0;
-		this.path = new LinkedList<PuzzleState>();
-		path.add(this);
+		this.parent = null;
 	}
 	
-	public PuzzleState(byte[] initState, int pathCost, int totalCost, List<PuzzleState> path) {
+	public PuzzleState(byte[] initState, int pathCost, int totalCost, PuzzleState parent) {
 		this.puzzle = initState;
 		this.pathCost = pathCost;
 		this.totalCost = totalCost;
-		this.path = path;
+		this.parent = parent;
 	}
 	
 	public PuzzleState(PuzzleState parentState) {
 		this.puzzle = Arrays.copyOf(parentState.getPuzzle(), STATE_LENGTH);
 		this.pathCost = parentState.getPathCost() + 1;
 		this.totalCost = 0;
-		this.path = new LinkedList(parentState.getPath());
-		this.path.add(this);
+		this.parent = parentState;
 	}
 	
 	public byte[] getPuzzle() {
@@ -69,8 +71,19 @@ public class PuzzleState {
 		return this.totalCost;
 	}
 	
+	public PuzzleState getParent() {
+		return this.parent;
+	}
+	
 	public List<PuzzleState> getPath(){
-		return this.path;
+		List<PuzzleState> path = new LinkedList<PuzzleState>();
+		path.add(this);
+		PuzzleState parent = this.parent;
+		while(parent != null) {
+			path.add(0, parent);
+			parent = parent.getParent();
+		}
+		return path;
 	}
 	
 	public boolean isGoal() {
@@ -105,7 +118,7 @@ public class PuzzleState {
 	public String toString() {
 //		String state = "";
 //		for(int i = 0; i < STATE_LENGTH; ++i) {
-//			if(puzzle[i] == 0)
+//			if(puzzle[i] == 0)8 puzzle A st
 //				state += " ";
 //			else
 //				state += puzzle[i];
@@ -157,10 +170,7 @@ public class PuzzleState {
 		return randomState;
 	}
 	
-	
-	// TODO
 	public List<PuzzleState> getNextStates(){
-		// All state related calculations should be done in here
 		List<PuzzleState> nextStates = new LinkedList<PuzzleState>();
 		int index = findSpace();
 		if(index+1%3 != 0 && index+1 < STATE_LENGTH){
@@ -183,6 +193,8 @@ public class PuzzleState {
 			child.swap(index, index-3);
 			nextStates.add(child);
 		}
+		if(parent != null) 
+			nextStates.remove(parent);
 		return nextStates; 
 	}
 	
@@ -230,7 +242,7 @@ public class PuzzleState {
 		System.out.println("The path was :");
 		for(PuzzleState ps : bestState.getPath())
 			System.out.println(ps);
-		System.out.println("It took " + (end-start)/1000000 + " milliseconds");
+		System.out.println("It took " + (long)((end-start)/1000000) + " milliseconds");
 	}
 	
 	public void solveTree(HeuristicInterface heuristic) {
@@ -253,16 +265,17 @@ public class PuzzleState {
 			frontier.addAll(nextStates);
 		}
 		long end = System.nanoTime();
-		System.out.println("Reached the goal state: ");
+		//System.out.println("Reached the goal state: ");
 		System.out.print(bestState + "\t");
 		System.out.println("Total nodes searched: " + nodesSearched);
 		System.out.println("The path was :");
 		for(PuzzleState ps : bestState.getPath())
 			System.out.println(ps);
-		System.out.println("It took " + (end-start)/1000000 + " milliseconds");
+		System.out.println("It took " + (long)((end-start)/1000000) + " milliseconds");
 	}
 
 	public void solve() {
+		System.out.println("Initial state: " + this);
 		System.out.println("Graph Search:");
 		System.out.println("Solving the puzzle using hamming distance as heuristic...");
 		solveGraph(new Hamming());
