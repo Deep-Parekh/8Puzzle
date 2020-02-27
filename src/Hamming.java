@@ -14,7 +14,7 @@ public class Hamming implements HeuristicInterface {
 		for(int i = 0; i < 9; ++i) {
 			if(puzzleState[i] == 0)
 				continue;
-			if(puzzleState[i] != i)
+			else if(puzzleState[i] != i)
 				misplaced++;
 		}
 		return misplaced;

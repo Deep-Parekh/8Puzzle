@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashSet;
 
 /**
  * 
@@ -18,7 +19,7 @@ public class PuzzleStateGenerator {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		File stateFile = new File("/Users/dparekh/Desktop/Spring_20/AI/Projects/Parekh_Deep_P1/bin/TestFiles/Random1004.txt");
+		File stateFile = new File("/Users/dparekh/Desktop/Spring_20/AI/Projects/Parekh_Deep_P1/bin/TestFiles/Unique5000.txt");
 		try{
 			if(stateFile.createNewFile()) {
 				System.out.println("Generating random states");
@@ -35,8 +36,13 @@ public class PuzzleStateGenerator {
 		String bytes = "";
 		byte[] state = null;
 		int i = 0;
-		while(i < 1000) {
+		HashSet<PuzzleState> states = new HashSet<PuzzleState>();
+		while(i < 5000) {
 			state = PuzzleState.getRandomValidState();
+			PuzzleState ps = new PuzzleState(state);
+			if(states.contains(ps))
+				continue;
+			states.add(ps);
 			System.out.println(Arrays.toString(state));
 			bytes = Arrays.toString(state);
 			bytes = bytes.substring(1, bytes.length()-1);
